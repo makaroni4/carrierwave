@@ -321,6 +321,12 @@ describe CarrierWave::Mount do
           @instance.remote_image_url = 'http://www.example.com/test.jpg'
           @instance.image.current_path.should =~ /test.jpg$/
         end
+
+        it "writes file with name from params" do
+          @instance.image = stub_file('portrait.jpg')
+          @instance.remote_image_url = { :url => 'http://www.example.com/test.jpg', :filename => "filename.jpg" }
+          @instance.image.current_path.should =~ /filename.jpg$/
+        end
       end
     end
 

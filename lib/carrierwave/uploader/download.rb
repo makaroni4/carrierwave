@@ -12,8 +12,9 @@ module CarrierWave
       include CarrierWave::Uploader::Cache
 
       class RemoteFile
-        def initialize(uri)
+        def initialize(uri, filename = nil)
           @uri = uri
+          @filename = filename
         end
 
         def original_filename
@@ -21,7 +22,8 @@ module CarrierWave
             match = file.meta['content-disposition'].match(/filename=(\"?)(.+)\1/)
             return match[2] unless match.nil?
           end
-          File.basename(file.base_uri.path)
+
+          @filename ||= File.basename(file.base_uri.path)
         end
 
         def respond_to?(*args)
@@ -56,10 +58,11 @@ module CarrierWave
       # === Parameters
       #
       # [url (String)] The URL where the remote file is stored
+      # [filename (String)] If specifed, filename from params will be used instead of filename parsed from URL
       #
-      def download!(uri)
+      def download!(uri, filename = nil)
         processed_uri = process_uri(uri)
-        file = RemoteFile.new(processed_uri)
+        file = RemoteFile.new(processed_uri, filename)
         raise CarrierWave::DownloadError, "trying to download a file which is not served over HTTP" unless file.http?
         cache!(file)
       end

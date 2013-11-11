@@ -342,14 +342,14 @@ module CarrierWave
       rescue CarrierWave::InvalidParameter
       end
 
-      def remote_url=(url)
-        return if url.blank?
+      def remote_url=(params)
+        url, filename = extract_url_and_filename(params)
 
         @remote_url = url
         @download_error = nil
         @integrity_error = nil
 
-        uploader.download!(url)
+        uploader.download!(url, filename)
 
       rescue CarrierWave::DownloadError => e
         @download_error = e
@@ -395,6 +395,13 @@ module CarrierWave
       attr_accessor :uploader_options
 
     private
+      def extract_url_and_filename(params)
+        if params.kind_of?(Hash)
+          [params[:url], params[:filename]]
+        else
+          [params, nil]
+        end
+      end
 
       def option(name)
         self.uploader_options ||= {}

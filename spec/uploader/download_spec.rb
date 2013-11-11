@@ -56,6 +56,11 @@ describe CarrierWave::Uploader::Download do
       @uploader.filename.should == 'test.jpg'
     end
 
+    it "sets the filename filename from params" do
+      @uploader.download!('http://www.example.com/test.jpg', 'filename.jpg')
+      @uploader.filename.should == 'filename.jpg'
+    end
+
     it "should move it to the tmp dir" do
       @uploader.download!('http://www.example.com/test.jpg')
       @uploader.file.path.should == public_path('uploads/tmp/1369894322-345-2255/test.jpg')
